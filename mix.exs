@@ -23,7 +23,8 @@ defmodule OffresContinents.MixProject do
     [
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
       {:table_rex, "~> 2.0.0"},
-      {:csv, "~> 2.3"}
+      {:csv, "~> 2.3"},
+      {:geocoder, "~> 1.0"}
     ]
   end
 end

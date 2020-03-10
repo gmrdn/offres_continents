@@ -86,8 +86,45 @@ defmodule OffresContinentsTest do
       }
     ]
 
-    test "Should fetch the job category from the profession_id" do
-      assert false
+    test "Should fetch the continent for the job's latitude and longitude" do
+      table = OffresContinents.get_continents_table()
+
+      mock_geoloc_api = fn _ ->
+        send(
+          self(),
+          {:ok,
+           %Geocoder.Coords{
+             location: %Geocoder.Location{
+               country_code: "fr"
+             }
+           }}
+        )
+      end
+
+      country =
+        OffresContinents.get_country_by_geoloc({"48.1392154", "11.5781413"}, mock_geoloc_api)
+
+      continent = OffresContinents.get_continent_by_country(country, table)
+      assert continent == "Europe"
+    end
+
+    test "Should replace stream lines by continent value and job category" do
+      stream = Stream.cycle(@jobs)
+
+      mock_geoloc_api = fn _ ->
+        send(
+          self(),
+          {:ok,
+           %Geocoder.Coords{
+             location: %Geocoder.Location{
+               country_code: "fr"
+             }
+           }}
+        )
+      end
+
+      assert List.first(Enum.take(OffresContinents.get_mapped_stream(stream, mock_geoloc_api), 1)) ==
+               {"Europe", "Marketing / Comm'"}
     end
   end
 end

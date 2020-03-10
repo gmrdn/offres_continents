@@ -8,11 +8,8 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 by adding `offres_continents` to your list of dependencies in `mix.exs`:
 
 ```elixir
-def deps do
-  [
-    {:offres_continents, "~> 0.1.0"}
-  ]
-end
+iex -S mix
+iex> OffresContinents.run()
 ```
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
