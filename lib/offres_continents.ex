@@ -68,4 +68,11 @@ defmodule OffresContinents do
     TableRex.quick_render!(rows, headers)
     |> IO.puts()
   end
+
+  def stream_csv(file) do
+    file
+    |> File.stream!()
+    |> CSV.decode(separator: ?,, headers: true)
+    |> Stream.map(fn {:ok, map} -> map end)
+  end
 end
