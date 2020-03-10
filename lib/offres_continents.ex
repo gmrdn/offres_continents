@@ -44,12 +44,13 @@ defmodule OffresContinents do
     [
       "TOTAL"
       | [
-          ""
+          Enum.map(collection, fn {_, c} -> c end)
+          |> Enum.sum()
           | columns
             |> Enum.map(fn col ->
               collection
-              |> Enum.filter(fn {{_a, b}, _c} -> b == col end)
-              |> Enum.map(fn {{_a, _b}, c} -> c end)
+              |> Enum.filter(fn {{_, category}, _} -> category == col end)
+              |> Enum.map(fn {_, sum} -> sum end)
               |> Enum.sum()
             end)
         ]

@@ -20,13 +20,13 @@ defmodule OffresContinentsTest do
   end
 
   test "Should calculate the total for each category" do
-    assert OffresContinents.get_totals_by_category(@map_counts) == ["TOTAL", "", 5, 1]
+    assert OffresContinents.get_totals_by_category(@map_counts) == ["TOTAL", 6, 5, 1]
   end
 
   test "Should get a full table with headers, totals and rows" do
     assert OffresContinents.get_full_table(@map_counts) == [
              ["", "TOTAL", "Tech", "Marketing / Comm'"],
-             ["TOTAL", "", 5, 1],
+             ["TOTAL", 6, 5, 1],
              ["Asie", 2, 2, 0],
              ["Europe", 4, 3, 1]
            ]
