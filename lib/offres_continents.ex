@@ -17,15 +17,7 @@ defmodule OffresContinents do
     collection
     |> Enum.group_by(fn {{a, _b}, _c} -> a end)
     |> Enum.map(fn {continent, sum_by_continent_and_type} ->
-      [
-        continent
-        | [
-            ""
-            | Enum.map(columns, fn column ->
-                get_nb_for_continent_and_category(sum_by_continent_and_type, {continent, column})
-              end)
-          ]
-      ]
+      [continent | get_sums_and_total(sum_by_continent_and_type, columns, continent)]
     end)
   end
 
@@ -34,6 +26,16 @@ defmodule OffresContinents do
       nil -> 0
       {_, nb} -> nb
     end
+  end
+
+  defp get_sums_and_total(sum_by_continent_and_type, columns, continent) do
+    sums_and_total =
+      Enum.map_reduce(columns, 0, fn column, acc ->
+        nb = get_nb_for_continent_and_category(sum_by_continent_and_type, {continent, column})
+        {nb, acc + nb}
+      end)
+
+    [elem(sums_and_total, 1) | elem(sums_and_total, 0)]
   end
 
   def get_totals_by_category(collection) do

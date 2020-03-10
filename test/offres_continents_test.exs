@@ -16,7 +16,7 @@ defmodule OffresContinentsTest do
   end
 
   test "Should create rows with zeros when needed" do
-    assert OffresContinents.get_rows(@map_counts) == [["Asie", "", 2, 0], ["Europe", "", 3, 1]]
+    assert OffresContinents.get_rows(@map_counts) == [["Asie", 2, 2, 0], ["Europe", 4, 3, 1]]
   end
 
   test "Should calculate the total for each category" do
@@ -27,12 +27,12 @@ defmodule OffresContinentsTest do
     assert OffresContinents.get_full_table(@map_counts) == [
              ["", "TOTAL", "Tech", "Marketing / Comm'"],
              ["TOTAL", "", 5, 1],
-             ["Asie", "", 2, 0],
-             ["Europe", "", 3, 1]
+             ["Asie", 2, 2, 0],
+             ["Europe", 4, 3, 1]
            ]
   end
 
   test "Should render the table in the console" do
-    assert OffresContinents.render_table(@map_counts) == true
+    assert OffresContinents.render_table(@map_counts) == :ok
   end
 end
