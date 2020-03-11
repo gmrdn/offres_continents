@@ -118,7 +118,7 @@ defmodule OffresContinents do
       Map.get(x, "profession_id") != "" and Map.get(x, "office_latitude") != "" and
         Map.get(x, "office_longitude") != ""
     end)
-#    |> Stream.map(&IO.inspect(&1))
+    #    |> Stream.map(&IO.inspect(&1))
     |> Stream.map(fn x ->
       {
         get_country_by_geoloc(
@@ -138,5 +138,4 @@ defmodule OffresContinents do
     |> Enum.frequencies()
     |> render_table()
   end
-
 end
