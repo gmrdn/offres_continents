@@ -24,13 +24,32 @@ defmodule RearrangeData do
     Map.fetch!(table, country)
   end
 
-  def get_country_by_geoloc({lat, lon}, call_geoloc_api \\ &Geocoder.call/1)
+  def get_continent_by_geoloc(continent_table, {lat, lon}, call_geoloc_api \\ &Geocoder.call/1)
       when is_binary(lat) and is_binary(lon) do
     {:ok, loc} = call_geoloc_api.({String.to_float(lat), String.to_float(lon)})
 
-    Map.fetch!(loc, :location)
-    |> Map.fetch!(:country_code)
-    |> String.upcase()
+    country =
+      Map.fetch!(loc, :location)
+      |> Map.fetch!(:country_code)
+      |> String.upcase()
+
+    Map.fetch!(continent_table, country)
+  end
+
+  def get_continent_by_geoloc_json(geojson, {lat, lon})
+      when is_binary(lat) and is_binary(lon) do
+    loc =
+      Enum.filter(geojson.geometries, fn x ->
+        Topo.contains?(x, {String.to_float(lon), String.to_float(lat)})
+      end)
+
+    if loc == [] do
+      IO.inspect({lat, lon})
+      "Unknown"
+    else
+      c = List.first(loc)
+      c.properties["continent"]
+    end
   end
 
   def get_category_by_job(table, job_id) do
@@ -40,22 +59,28 @@ defmodule RearrangeData do
   end
 
   def get_mapped_stream(stream, call_geoloc_api \\ &Geocoder.call/1) do
-    continents_table = get_continents_table()
+    # continents_table = get_continents_table()
     categories_table = get_categories_table()
+
+    geojson =
+      Poison.decode!(File.read!('./data/continents-simplified.json')) |> Geo.JSON.decode!()
 
     stream
     |> Stream.filter(fn x ->
       x["profession_id"] != "" and x["office_latitude"] != "" and
         x["office_longitude"] != ""
     end)
-    #    |> Stream.map(&IO.inspect(&1))
+    # |> Stream.map(&IO.inspect(&1))
     |> Stream.map(fn x ->
       {
-        get_country_by_geoloc(
-          {x["office_latitude"], x["office_longitude"]},
-          call_geoloc_api
-        )
-        |> get_continent_by_country(continents_table),
+        # get_continent_by_geoloc(
+        #   continents_table,
+        #   {x["office_latitude"], x["office_longitude"]},
+        #   call_geoloc_api),
+        get_continent_by_geoloc_json(
+          geojson,
+          {x["office_latitude"], x["office_longitude"]}
+        ),
         get_category_by_job(categories_table, x["profession_id"])
       }
     end)

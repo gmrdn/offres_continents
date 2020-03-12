@@ -59,9 +59,13 @@ defmodule RearrangeDataTest do
         )
       end
 
-      country = RearrangeData.get_country_by_geoloc({"48.1392154", "11.5781413"}, mock_geoloc_api)
+      continent =
+        RearrangeData.get_continent_by_geoloc(
+          table,
+          {"48.1392154", "11.5781413"},
+          mock_geoloc_api
+        )
 
-      continent = RearrangeData.get_continent_by_country(country, table)
       assert continent == "Europe"
     end
 
