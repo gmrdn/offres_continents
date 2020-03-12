@@ -24,18 +24,6 @@ defmodule RearrangeData do
     Map.fetch!(table, country)
   end
 
-  def get_continent_by_geoloc(continent_table, {lat, lon}, call_geoloc_api \\ &Geocoder.call/1)
-      when is_binary(lat) and is_binary(lon) do
-    {:ok, loc} = call_geoloc_api.({String.to_float(lat), String.to_float(lon)})
-
-    country =
-      Map.fetch!(loc, :location)
-      |> Map.fetch!(:country_code)
-      |> String.upcase()
-
-    Map.fetch!(continent_table, country)
-  end
-
   def get_continent_by_geoloc_json(geojson, {lat, lon})
       when is_binary(lat) and is_binary(lon) do
     loc =
@@ -58,8 +46,7 @@ defmodule RearrangeData do
     |> List.first()
   end
 
-  def get_mapped_stream(stream, call_geoloc_api \\ &Geocoder.call/1) do
-    # continents_table = get_continents_table()
+  def get_mapped_stream(stream) do
     categories_table = get_categories_table()
 
     geojson =
@@ -70,13 +57,8 @@ defmodule RearrangeData do
       x["profession_id"] != "" and x["office_latitude"] != "" and
         x["office_longitude"] != ""
     end)
-    # |> Stream.map(&IO.inspect(&1))
     |> Stream.map(fn x ->
       {
-        # get_continent_by_geoloc(
-        #   continents_table,
-        #   {x["office_latitude"], x["office_longitude"]},
-        #   call_geoloc_api),
         get_continent_by_geoloc_json(
           geojson,
           {x["office_latitude"], x["office_longitude"]}

@@ -45,25 +45,13 @@ defmodule RearrangeDataTest do
     ]
 
     test "Should fetch the continent for the job's latitude and longitude" do
-      table = RearrangeData.get_continents_table()
-
-      mock_geoloc_api = fn _ ->
-        send(
-          self(),
-          {:ok,
-           %Geocoder.Coords{
-             location: %Geocoder.Location{
-               country_code: "fr"
-             }
-           }}
-        )
-      end
+      geojson =
+        Poison.decode!(File.read!('./data/continents-simplified.json')) |> Geo.JSON.decode!()
 
       continent =
-        RearrangeData.get_continent_by_geoloc(
-          table,
-          {"48.1392154", "11.5781413"},
-          mock_geoloc_api
+        RearrangeData.get_continent_by_geoloc_json(
+          geojson,
+          {"48.1392154", "11.5781413"}
         )
 
       assert continent == "Europe"
@@ -72,19 +60,7 @@ defmodule RearrangeDataTest do
     test "Should replace stream lines by continent value and job category" do
       stream = Stream.cycle(@jobs)
 
-      mock_geoloc_api = fn _ ->
-        send(
-          self(),
-          {:ok,
-           %Geocoder.Coords{
-             location: %Geocoder.Location{
-               country_code: "fr"
-             }
-           }}
-        )
-      end
-
-      assert List.first(Enum.take(RearrangeData.get_mapped_stream(stream, mock_geoloc_api), 1)) ==
+      assert List.first(Enum.take(RearrangeData.get_mapped_stream(stream), 1)) ==
                {"Europe", "Marketing / Comm'"}
     end
   end
