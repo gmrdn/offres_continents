@@ -45,16 +45,27 @@ defmodule RearrangeDataTest do
     ]
 
     test "Should fetch the continent for the job's latitude and longitude" do
-      geojson =
-        Poison.decode!(File.read!('./data/continents-simplified.json')) |> Geo.JSON.decode!()
+      geojson = RearrangeData.get_continents_table()
 
       continent =
-        RearrangeData.get_continent_by_geoloc_json(
+        RearrangeData.get_continent_by_geoloc(
           geojson,
           {"48.1392154", "11.5781413"}
         )
 
       assert continent == "Europe"
+    end
+
+    test "Should classify locations as Unknown when it can't be found in the geojson table" do
+      geojson = RearrangeData.get_continents_table()
+
+      continent =
+        RearrangeData.get_continent_by_geoloc(
+          geojson,
+          {"78.2178086", "15.6573606"}
+        )
+
+      assert continent == "Unknown"
     end
 
     test "Should replace stream lines by continent value and job category" do
